@@ -165,7 +165,7 @@ def export_products_in_batches(
 
     for batch_pks in queryset_in_batches(queryset):
         product_batch = Product.objects.filter(pk__in=batch_pks).prefetch_related(
-            "attributes",
+            "attributevalues",
             "variants",
             "collections",
             "media",
@@ -221,7 +221,7 @@ def append_to_file(
     file_type: str,
     delimiter: str,
 ):
-    table = etl.fromdicts(export_data, header=headers, missing=" ")
+    table = etl.fromdicts(export_data, header=headers, missing="")
 
     if file_type == FileTypes.CSV:
         etl.io.csv.appendcsv(table, temporary_file.name, delimiter=delimiter)

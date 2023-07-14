@@ -5,6 +5,7 @@ All notable, unreleased changes to this project will be documented in this file.
 # 3.16.0 [Unreleased]
 
 ### Breaking changes
+- Change the Attribute - Product relation to decrease code complexity and make it easier to understand the relations - #13407 by @aniav
 
 ### GraphQL API
 
@@ -66,6 +67,10 @@ All notable, unreleased changes to this project will be documented in this file.
     1. Shipping address
     2. Billing address
     3. Channel's default country
+      1. Shipping address
+      2. Billing address
+      3. Channel's default country
+
 
 ### GraphQL API
 

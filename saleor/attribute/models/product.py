@@ -2,7 +2,7 @@ from django.db import models
 
 from ...core.models import SortableModel
 from ...product.models import Product, ProductType
-from .base import AssociatedAttributeManager, BaseAssignedAttribute
+from .base import AssociatedAttributeManager
 
 
 class AssignedProductAttributeValue(SortableModel):
@@ -11,38 +11,20 @@ class AssignedProductAttributeValue(SortableModel):
         on_delete=models.CASCADE,
         related_name="productvalueassignment",
     )
-    assignment = models.ForeignKey(
-        "AssignedProductAttribute",
+    product = models.ForeignKey(
+        Product,
+        related_name="attributevalues",
         on_delete=models.CASCADE,
-        related_name="productvalueassignment",
+        null=True,  # make it non-nullable after migration 0030 went through release
+        blank=False,
     )
 
     class Meta:
-        unique_together = (("value", "assignment"),)
+        unique_together = (("value", "product"),)
         ordering = ("sort_order", "pk")
 
     def get_ordering_queryset(self):
-        return self.assignment.productvalueassignment.all()
-
-
-class AssignedProductAttribute(BaseAssignedAttribute):
-    """Associate a product type attribute and selected values to a given product."""
-
-    product = models.ForeignKey(
-        Product, related_name="attributes", on_delete=models.CASCADE
-    )
-    assignment = models.ForeignKey(
-        "AttributeProduct", on_delete=models.CASCADE, related_name="productassignments"
-    )
-    values = models.ManyToManyField(
-        "AttributeValue",
-        blank=True,
-        related_name="productassignments",
-        through=AssignedProductAttributeValue,
-    )
-
-    class Meta:
-        unique_together = (("product", "assignment"),)
+        return self.product.attributevalues.all()  # type: ignore[union-attr]
 
 
 class AttributeProduct(SortableModel):
@@ -51,13 +33,6 @@ class AttributeProduct(SortableModel):
     )
     product_type = models.ForeignKey(
         ProductType, related_name="attributeproduct", on_delete=models.CASCADE
-    )
-    assigned_products = models.ManyToManyField(
-        Product,
-        blank=True,
-        through=AssignedProductAttribute,
-        through_fields=("assignment", "product"),
-        related_name="attributesrelated",
     )
 
     objects = AssociatedAttributeManager()

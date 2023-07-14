@@ -46,7 +46,7 @@ class ProductTypeBulkDelete(ModelBulkDeleteMutation):
         attribute_models.AttributeValue.objects.filter(
             Q(attribute__input_type__in=AttributeInputType.TYPES_WITH_UNIQUE_VALUES)
             & (
-                Q(productassignments__assignment__product_type_id__in=instance_pks)
+                Q(productvalueassignment__product__product_type_id__in=instance_pks)
                 | Q(variantassignments__assignment__product_type_id__in=instance_pks)
             )
         ).delete()

@@ -7,7 +7,7 @@ from .....permission.enums import ProductPermissions
 from .....product import models
 from .....product.search import update_product_search_vector
 from .....product.tasks import update_product_discounted_price_task
-from ....attribute.utils import AttributeAssignmentMixin, AttrValuesInput
+from ....attribute.utils import AttrValuesInput, ProductAttributeAssignmentMixin
 from ....core import ResolveInfo
 from ....core.descriptions import ADDED_IN_310
 from ....core.mutations import ModelWithExtRefMutation
@@ -45,7 +45,7 @@ class ProductUpdate(ProductCreate, ModelWithExtRefMutation):
         cls, attributes: dict, product_type: models.ProductType
     ) -> T_INPUT_MAP:
         attributes_qs = product_type.product_attributes.all()
-        attributes = AttributeAssignmentMixin.clean_input(
+        attributes = ProductAttributeAssignmentMixin.clean_input(
             attributes, attributes_qs, creation=False
         )
         return attributes

@@ -5,11 +5,7 @@ from .base import (
     AttributeValueTranslation,
 )
 from .page import AssignedPageAttribute, AssignedPageAttributeValue, AttributePage
-from .product import (
-    AssignedProductAttribute,
-    AssignedProductAttributeValue,
-    AttributeProduct,
-)
+from .product import AssignedProductAttributeValue, AttributeProduct
 from .product_variant import (
     AssignedVariantAttribute,
     AssignedVariantAttributeValue,
@@ -24,7 +20,6 @@ __all__ = [
     "AssignedPageAttribute",
     "AssignedPageAttributeValue",
     "AttributePage",
-    "AssignedProductAttribute",
     "AssignedProductAttributeValue",
     "AttributeProduct",
     "AssignedVariantAttribute",

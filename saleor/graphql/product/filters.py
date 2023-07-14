@@ -14,7 +14,6 @@ from django.utils import timezone
 
 from ...attribute import AttributeInputType
 from ...attribute.models import (
-    AssignedProductAttribute,
     AssignedProductAttributeValue,
     AssignedVariantAttribute,
     AssignedVariantAttributeValue,
@@ -210,13 +209,8 @@ def filter_products_by_attributes_values(qs, queries: T_PRODUCT_FILTER_QUERIES):
         assigned_product_attribute_values = (
             AssignedProductAttributeValue.objects.filter(value_id__in=values)
         )
-        assigned_product_attributes = AssignedProductAttribute.objects.filter(
-            Exists(
-                assigned_product_attribute_values.filter(assignment_id=OuterRef("pk"))
-            )
-        )
         product_attribute_filter = Q(
-            Exists(assigned_product_attributes.filter(product_id=OuterRef("pk")))
+            Exists(assigned_product_attribute_values.filter(product_id=OuterRef("pk")))
         )
 
         assigned_variant_attribute_values = (
@@ -243,11 +237,8 @@ def filter_products_by_attributes_values_qs(qs, values_qs):
     assigned_product_attribute_values = AssignedProductAttributeValue.objects.filter(
         value__in=values_qs
     )
-    assigned_product_attributes = AssignedProductAttribute.objects.filter(
-        Exists(assigned_product_attribute_values.filter(assignment_id=OuterRef("pk")))
-    )
     product_attribute_filter = Q(
-        Exists(assigned_product_attributes.filter(product_id=OuterRef("pk")))
+        Exists(assigned_product_attribute_values.filter(product_id=OuterRef("pk")))
     )
 
     assigned_variant_attribute_values = AssignedVariantAttributeValue.objects.filter(

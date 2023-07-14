@@ -13,19 +13,18 @@ from ...plugins.manager import get_plugins_manager
 from ..serializers import (
     serialize_checkout_lines,
     serialize_checkout_lines_for_tax_calculation,
-    serialize_product_or_variant_attributes,
+    serialize_product_attributes,
+    serialize_variant_attributes,
 )
 
 
 def test_serialize_product_attributes(
     product_with_variant_with_two_attributes, product_with_multiple_values_attributes
 ):
-    variant_data = serialize_product_or_variant_attributes(
+    variant_data = serialize_variant_attributes(
         product_with_variant_with_two_attributes.variants.first()
     )
-    product_data = serialize_product_or_variant_attributes(
-        product_with_multiple_values_attributes
-    )
+    product_data = serialize_product_attributes(product_with_multiple_values_attributes)
     assert len(variant_data) == 2
     assert variant_data[1] == {
         "entity_type": None,
@@ -112,7 +111,7 @@ def test_serialize_checkout_lines(
             "full_name": variant.display_product(),
             "product_name": product.name,
             "variant_name": variant.name,
-            "attributes": serialize_product_or_variant_attributes(variant),
+            "attributes": serialize_variant_attributes(variant),
             "variant_id": variant.get_global_id(),
         }
     assert len(checkout_lines_data) == len(list(checkout_lines))
@@ -157,7 +156,7 @@ def test_serialize_checkout_lines_with_sale(checkout_with_item, discount_info):
             "full_name": variant.display_product(),
             "product_name": product.name,
             "variant_name": variant.name,
-            "attributes": serialize_product_or_variant_attributes(variant),
+            "attributes": serialize_variant_attributes(variant),
             "variant_id": variant.get_global_id(),
         }
     assert len(checkout_lines_data) == len(list(checkout_lines))

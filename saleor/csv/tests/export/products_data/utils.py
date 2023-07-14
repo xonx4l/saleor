@@ -1,17 +1,25 @@
+from collections import defaultdict
+
 from .....attribute import AttributeInputType
 from .....core.utils.editorjs import clean_editor_js
 
 
 def add_product_attribute_data_to_expected_data(data, product, attribute_ids, pk=None):
-    for assigned_attribute in product.attributes.all():
-        if assigned_attribute:
-            header = f"{assigned_attribute.attribute.slug} (product attribute)"
-            if str(assigned_attribute.attribute.pk) in attribute_ids:
-                value = get_attribute_value(assigned_attribute)
-                if pk:
-                    data[pk][header] = value
-                else:
-                    data[header] = value
+    attributes = [ap.attribute for ap in product.product_type.attributeproduct.all()]
+    values_map = defaultdict(list)
+    for av in product.attributevalues.all():
+        values_map[av.value.attribute_id].append(av.value)
+
+    for attribute in attributes:
+        header = f"{attribute.slug} (product attribute)"
+        attribute_values = values_map[attribute.id]
+        value_instance = attribute_values[0] if attribute_values else None
+        if str(attribute.pk) in attribute_ids and value_instance:
+            value = get_attribute_value(attribute, value_instance)
+            if pk:
+                data[pk][header] = value
+            else:
+                data[header] = value
     return data
 
 
@@ -19,7 +27,9 @@ def add_variant_attribute_data_to_expected_data(data, variant, attribute_ids, pk
     for assigned_attribute in variant.attributes.all():
         header = f"{assigned_attribute.attribute.slug} (variant attribute)"
         if str(assigned_attribute.attribute.pk) in attribute_ids:
-            value = get_attribute_value(assigned_attribute)
+            value_instance = assigned_attribute.values.first()
+            attribute = assigned_attribute.attribute
+            value = get_attribute_value(attribute, value_instance)
             if pk:
                 data[pk][header] = value
             else:
@@ -28,11 +38,9 @@ def add_variant_attribute_data_to_expected_data(data, variant, attribute_ids, pk
     return data
 
 
-def get_attribute_value(assigned_attribute):
-    value_instance = assigned_attribute.values.first()
+def get_attribute_value(attribute, value_instance):
     if not value_instance:
         return ""
-    attribute = assigned_attribute.attribute
     if attribute.input_type == AttributeInputType.FILE:
         value = "http://mirumee.com/media/" + value_instance.file_url
     elif attribute.input_type == AttributeInputType.REFERENCE:

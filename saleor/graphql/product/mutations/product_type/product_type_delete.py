@@ -59,7 +59,7 @@ class ProductTypeDelete(ModelDeleteMutation):
         attribute_models.AttributeValue.objects.filter(
             Q(attribute__input_type__in=AttributeInputType.TYPES_WITH_UNIQUE_VALUES)
             & (
-                Q(productassignments__assignment__product_type_id=instance_pk)
+                Q(productvalueassignment__product__product_type_id=instance_pk)
                 | Q(variantassignments__assignment__product_type_id=instance_pk)
             )
         ).delete()

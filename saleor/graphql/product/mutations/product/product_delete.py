@@ -83,6 +83,6 @@ class ProductDelete(ModelDeleteMutation, ModelWithExtRefMutation):
     @staticmethod
     def delete_assigned_attribute_values(instance):
         attribute_models.AttributeValue.objects.filter(
-            productassignments__product_id=instance.id,
+            productvalueassignment__product_id=instance.id,
             attribute__input_type__in=AttributeInputType.TYPES_WITH_UNIQUE_VALUES,
         ).delete()

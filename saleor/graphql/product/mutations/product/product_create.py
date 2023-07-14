@@ -12,7 +12,7 @@ from .....product.error_codes import ProductErrorCode
 from .....product.search import update_product_search_vector
 from .....product.tasks import update_product_discounted_price_task
 from ....attribute.types import AttributeValueInput
-from ....attribute.utils import AttributeAssignmentMixin, AttrValuesInput
+from ....attribute.utils import AttrValuesInput, ProductAttributeAssignmentMixin
 from ....channel import ChannelContext
 from ....core import ResolveInfo
 from ....core.descriptions import (
@@ -147,7 +147,9 @@ class ProductCreate(ModelMutation):
         cls, attributes: dict, product_type: models.ProductType
     ) -> T_INPUT_MAP:
         attributes_qs = product_type.product_attributes.all()
-        attributes = AttributeAssignmentMixin.clean_input(attributes, attributes_qs)
+        attributes = ProductAttributeAssignmentMixin.clean_input(
+            attributes, attributes_qs
+        )
         return attributes
 
     @classmethod
@@ -209,7 +211,7 @@ class ProductCreate(ModelMutation):
             instance.save()
             attributes = cleaned_input.get("attributes")
             if attributes:
-                AttributeAssignmentMixin.save(instance, attributes)
+                ProductAttributeAssignmentMixin.save(instance, attributes)
 
     @classmethod
     def _save_m2m(cls, _info: ResolveInfo, instance, cleaned_data):
