@@ -36,11 +36,12 @@ def test_query_published_page(user_api_client, page):
 
     page_type = page.page_type
 
-    assert page.attributes.count() == 1
-    page_attr_assigned = page.attributes.first()
-    page_attr = page_attr_assigned.attribute
+    assert page.new_attributes.count() == 1
+    page_attr_assigned = page.new_attributes.first()
+    page_attr = page_attr_assigned
 
-    assert page_attr_assigned.values.count() == 1
+    assert page.attributevalues.count() == 1
+
     page_attr_value = page_attr_assigned.values.first()
 
     # query by ID

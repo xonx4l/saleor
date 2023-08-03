@@ -4010,7 +4010,9 @@ def test_nested_page_attribute_translation(
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_translations]
     )
-
+    print("*" * 33)
+    print(response.json())
+    print("*" * 33)
     # then
     data = get_graphql_content(response)["data"]
 

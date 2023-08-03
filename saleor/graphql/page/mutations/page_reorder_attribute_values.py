@@ -1,6 +1,7 @@
 import graphene
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
+from ....core.tracing import traced_atomic_transaction
 from ....page import models as page_models
 from ....page.error_codes import PageErrorCode
 from ....permission.enums import PagePermissions
@@ -9,6 +10,7 @@ from ...core import ResolveInfo
 from ...core.doc_category import DOC_CATEGORY_PAGES
 from ...core.inputs import ReorderInput
 from ...core.types import NonNullList, PageError
+from ...core.utils.reordering import perform_reordering
 from ...page.types import Page
 
 
@@ -40,15 +42,46 @@ class PageReorderAttributeValues(BaseReorderAttributeValuesMutation):
     @classmethod
     def perform_mutation(cls, _root, _info: ResolveInfo, /, **data):
         page_id = data["page_id"]
-        page = cls.perform(page_id, "page", data, "pagevalueassignment", PageErrorCode)
+        page = cls.perform(page_id, "page", data, "attributevalues", PageErrorCode)
         return PageReorderAttributeValues(page=page)
+
+    @classmethod
+    def perform(
+        cls,
+        instance_id: str,
+        instance_type: str,
+        data: dict,
+        assignment_lookup: str,
+        error_code_enum,
+    ):
+        attribute_id = data["attribute_id"]
+        moves = data["moves"]
+
+        instance = cls.get_instance(instance_id)
+        cls.get_attribute_assignment(
+            instance, instance_type, attribute_id, error_code_enum
+        )
+
+        values_m2m = instance.attributevalues.all()
+        try:
+            operations = cls.prepare_operations(moves, values_m2m)
+        except ValidationError as error:
+            error.code = error_code_enum.NOT_FOUND.value
+            raise ValidationError({"moves": error})
+
+        with traced_atomic_transaction():
+            perform_reordering(values_m2m, operations)
+
+        return instance
 
     @classmethod
     def get_instance(cls, instance_id: str):
         pk = cls.get_global_id_or_error(instance_id, only_type=Page, field="page_id")
 
         try:
-            page = page_models.Page.objects.prefetch_related("attributes").get(pk=pk)
+            page = page_models.Page.objects.prefetch_related("new_attributes").get(
+                pk=pk
+            )
         except ObjectDoesNotExist:
             raise ValidationError(
                 {

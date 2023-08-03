@@ -109,9 +109,13 @@ class BaseReorderAttributeValuesMutation(BaseMutation):
         )
 
         try:
-            attribute_assignment = instance.attributes.prefetch_related("values").get(
-                assignment__attribute_id=attribute_pk
-            )
+            # # TODO just temporary
+            if hasattr(instance, "new_attributes"):
+                attribute_assignment = instance.new_attributes.get(id=attribute_pk)
+            else:
+                attribute_assignment = instance.attributes.prefetch_related(
+                    "values"
+                ).get(assignment__attribute_id=attribute_pk)
         except ObjectDoesNotExist:
             raise ValidationError(
                 {

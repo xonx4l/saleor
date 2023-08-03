@@ -37,7 +37,7 @@ class PageTypeDelete(ModelDeleteMutation):
     def delete_assigned_attribute_values(instance_pk):
         attribute_models.AttributeValue.objects.filter(
             attribute__input_type__in=AttributeInputType.TYPES_WITH_UNIQUE_VALUES,
-            pageassignments__assignment__page_type_id=instance_pk,
+            pagevalueassignment__new_page__page_type_id=instance_pk,
         ).delete()
 
     @classmethod

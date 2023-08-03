@@ -29,7 +29,6 @@ from ...account.search import (
 )
 from ...account.utils import store_user_address
 from ...attribute.models import (
-    AssignedPageAttribute,
     AssignedProductAttribute,
     AssignedProductAttributeValue,
     AssignedVariantAttribute,
@@ -399,17 +398,18 @@ def assign_attribute_values_to_variants(variant_attribute_values):
 
 
 def assign_attributes_to_pages(page_attributes):
-    for value in page_attributes:
-        pk = value["pk"]
-        defaults = dict(value["fields"])
-        defaults["page_id"] = defaults.pop("page")
-        defaults["assignment_id"] = defaults.pop("assignment")
-        assigned_values = defaults.pop("values")
-        assoc, created = AssignedPageAttribute.objects.update_or_create(
-            pk=pk, defaults=defaults
-        )
-        if created:
-            assoc.values.set(AttributeValue.objects.filter(pk__in=assigned_values))
+    pass
+    # for value in page_attributes:
+    #     pk = value["pk"]
+    #     defaults = dict(value["fields"])
+    #     defaults["page_id"] = defaults.pop("page")
+    #     defaults["assignment_id"] = defaults.pop("assignment")
+    #     assigned_values = defaults.pop("values")
+    #     assoc, created = AssignedPageAttribute.objects.update_or_create(
+    #         pk=pk, defaults=defaults
+    #     )
+    #     if created:
+    #         assoc.values.set(AttributeValue.objects.filter(pk__in=assigned_values))
 
 
 def set_field_as_money(defaults, field):

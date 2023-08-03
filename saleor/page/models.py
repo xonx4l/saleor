@@ -30,6 +30,11 @@ class Page(ModelWithMetadata, SeoModel, PublishableModel):
     page_type = models.ForeignKey(
         "PageType", related_name="pages", on_delete=models.CASCADE
     )
+    new_attributes = models.ManyToManyField(
+        "attribute.Attribute",
+        blank=True,
+        related_name="new_pages",
+    )
     content = SanitizedJSONField(blank=True, null=True, sanitizer=clean_editor_js)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 

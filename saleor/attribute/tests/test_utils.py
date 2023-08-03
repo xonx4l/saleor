@@ -77,24 +77,22 @@ def test_associate_attribute_to_product_instance_multiple_values(
 
 def test_associate_attribute_to_page_instance_multiple_values(page):
     """Ensure multiple values in proper order are assigned."""
-    old_assignment = page.attributes.first()
-    assert old_assignment is not None, "The page doesn't have attribute-values"
-    assert old_assignment.values.count() == 1
+    attribute = page.new_attributes.first()
+    assert attribute is not None, "The page doesn't have attribute-values"
+    assert page.attributevalues.count() == 1
 
-    attribute = old_assignment.attribute
+    # attribute = new_attributes
     values = attribute.values.all()
 
     # Clear the values
-    new_assignment = associate_attribute_values_to_instance(
-        page, attribute, values[1], values[0]
-    )
+    associate_attribute_values_to_instance(page, attribute, values[1], values[0])
 
     # Ensure the new assignment was created and ordered correctly
-    assert new_assignment.pk == old_assignment.pk
-    assert new_assignment.values.count() == 2
-    assert list(
-        new_assignment.pagevalueassignment.values_list("value__pk", "sort_order")
-    ) == [(values[1].pk, 0), (values[0].pk, 1)]
+    assert page.attributevalues.count() == 2
+    assert list(page.attributevalues.values_list("value__pk", "sort_order")) == [
+        (values[1].pk, 0),
+        (values[0].pk, 1),
+    ]
 
 
 def test_associate_attribute_to_variant_instance_multiple_values(

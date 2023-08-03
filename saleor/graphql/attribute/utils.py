@@ -16,7 +16,10 @@ from text_unidecode import unidecode
 
 from ...attribute import AttributeEntityType, AttributeInputType, AttributeType
 from ...attribute import models as attribute_models
-from ...attribute.utils import associate_attribute_values_to_instance
+from ...attribute.utils import (
+    associate_attribute_values_to_instance,
+    get_page_attribute_values,
+)
 from ...core.utils import generate_unique_slug, prepare_unique_slug
 from ...core.utils.editorjs import clean_editor_js
 from ...core.utils.url import get_default_storage_root_url
@@ -61,7 +64,9 @@ class AttrValuesInput:
 
 
 T_INSTANCE = Union[
-    product_models.Product, product_models.ProductVariant, page_models.Page
+    product_models.Product,
+    product_models.ProductVariant
+    # page_models.Page
 ]
 T_INPUT_MAP = List[Tuple[attribute_models.Attribute, AttrValuesInput]]
 T_ERROR_DICT = Dict[Tuple[str, str], List]
@@ -171,9 +176,17 @@ class AttributeAssignmentMixin:
         lookup_field: str,
         value,
     ):
-        assignment = instance.attributes.filter(
-            assignment__attribute=attribute, **{f"values__{lookup_field}": value}
-        ).first()
+        if isinstance(instance, page_models.Page):
+            values = get_page_attribute_values(instance, attribute)
+            return (
+                None if values is [] else values.filter(**{lookup_field: value}).first()
+            )
+
+        else:
+            assignment = instance.attributes.filter(
+                assignment__attribute=attribute, **{f"values__{lookup_field}": value}
+            ).first()
+
         return (
             None
             if assignment is None
@@ -430,9 +443,15 @@ class AttributeAssignmentMixin:
 
         # drop attribute assignment model when values are unassigned from instance
         if clean_assignment:
-            instance.attributes.filter(
-                assignment__attribute_id__in=clean_assignment
-            ).delete()
+            # TODO fix that later
+            if isinstance(instance, page_models.Page):
+                instance.attributevalues.filter(
+                    value__attribute_id__in=clean_assignment
+                ).first()
+            else:
+                instance.attributes.filter(
+                    assignment__attribute_id__in=clean_assignment
+                ).delete()
 
     @classmethod
     def _pre_save_dropdown_value(
