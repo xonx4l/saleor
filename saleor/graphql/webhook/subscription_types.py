@@ -1163,9 +1163,7 @@ class FulfillmentBase(AbstractType):
 
 class FulfillmentCreated(SubscriptionObjectType, FulfillmentBase):
     notify_customer = graphene.Boolean(
-        description=(
-            "If true, send an email notification to the customer." + ADDED_IN_316
-        ),
+        description="If true, send a notification to the customer." + ADDED_IN_316,
         required=True,
     )
 
@@ -1201,11 +1199,32 @@ class FulfillmentCanceled(SubscriptionObjectType, FulfillmentBase):
 
 
 class FulfillmentApproved(SubscriptionObjectType, FulfillmentBase):
+    notify_customer = graphene.Boolean(
+        description="If true, send a notification to the customer." + ADDED_IN_316,
+        required=True,
+    )
+
     class Meta:
+        doc_category = DOC_CATEGORY_ORDERS
         root_type = "Fulfillment"
-        enable_dry_run = True
+        enable_dry_run = False
         interfaces = (Event,)
         description = "Event sent when fulfillment is approved." + ADDED_IN_37
+
+    @staticmethod
+    def resolve_fulfillment(root, info: ResolveInfo):
+        _, data = root
+        return data["fulfillment"]
+
+    @staticmethod
+    def resolve_order(root, info: ResolveInfo):
+        _, data = root
+        return data["fulfillment"].order
+
+    @staticmethod
+    def resolve_notify_customer(root, _info: ResolveInfo):
+        _, data = root
+        return data["notify_customer"]
 
 
 class FulfillmentMetadataUpdated(SubscriptionObjectType, FulfillmentBase):

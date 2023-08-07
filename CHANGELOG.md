@@ -12,6 +12,8 @@ All notable, unreleased changes to this project will be documented in this file.
 
 - Add `NOTIFY_CUSTOMER` flag to `FulfillmentCreated` type - #13620, by @Air-t
   - Inform apps if customer should be notified when fulfillment is created.
+- Add `NOTIFY_CUSTOMER` flag to `FulfillmentApproved` type - #13637, by @Air-t
+  - Inform apps if customer should be notified when fulfillment is approved.
 
 ### Other changes
 - Fix error in variant available stock calculation - 13593 by @awaisdar001
