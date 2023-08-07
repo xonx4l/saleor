@@ -71,8 +71,8 @@ def _associate_attribute_to_instance(
         instance.new_attributes.add(attribute)
 
         for i in AssignedPageAttributeValue.objects.filter(
-            new_page=instance, value__attribute_id=attribute.id
-        ):
+            new_page_id=instance.pk, value__attribute=attribute
+        ).exclude(value__in=values):
             i.delete()
 
         # Create new assignments

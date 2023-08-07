@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import graphene
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
+from ....attribute.utils import get_page_attributes
 from ....core.tracing import traced_atomic_transaction
 from ...core.inputs import ReorderInput
 from ...core.mutations import BaseMutation
@@ -111,7 +112,9 @@ class BaseReorderAttributeValuesMutation(BaseMutation):
         try:
             # # TODO just temporary
             if hasattr(instance, "new_attributes"):
-                attribute_assignment = instance.new_attributes.get(id=attribute_pk)
+                attribute_assignment = get_page_attributes(instance).get(
+                    id=attribute_pk
+                )
             else:
                 attribute_assignment = instance.attributes.prefetch_related(
                     "values"

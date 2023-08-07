@@ -13,6 +13,7 @@ from freezegun import freeze_time
 from .....attribute.models import AssignedPageAttributeValue, AttributeValue
 from .....attribute.utils import (
     associate_attribute_values_to_instance,
+    get_page_attribute_values,
     get_page_attributes,
 )
 from .....page.error_codes import PageErrorCode
@@ -99,9 +100,7 @@ def test_update_page(staff_api_client, permission_manage_pages, page):
     assert data["page"]["slug"] == new_slug
 
     expected_attributes = []
-    page_attr = page.new_attributes.all()
     for attr in page_type.page_attributes.all():
-        # print(f"slug: {attr.slug}, tag_slug: {tag_attr.slug}")
         if attr.slug != tag_attr.slug:
             values = [
                 {
@@ -111,7 +110,9 @@ def test_update_page(staff_api_client, permission_manage_pages, page):
                     "reference": None,
                     "plainText": None,
                 }
-                for slug, name in page_attr.filter().values_list("slug", "name")
+                for slug, name in get_page_attribute_values(page, attr).values_list(
+                    "slug", "name"
+                )
             ]
         else:
             values = [
@@ -223,7 +224,6 @@ def test_update_page_only_title(staff_api_client, permission_manage_pages, page)
     assert data["page"]["slug"] == new_slug
 
     expected_attributes = []
-    page_attr = page.new_attributes.all()
     for attr in page_type.page_attributes.all():
         values = [
             {
@@ -233,8 +233,8 @@ def test_update_page_only_title(staff_api_client, permission_manage_pages, page)
                 "reference": None,
                 "plainText": None,
             }
-            for slug, name in page_attr.filter(id=attr.id).values_list(
-                "values__slug", "values__name"
+            for slug, name in get_page_attribute_values(page, attr).values_list(
+                "slug", "name"
             )
         ]
         attr_data = {

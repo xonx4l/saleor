@@ -1,6 +1,6 @@
 import graphene
 
-from .....attribute.models import AttributeValue
+from .....attribute.models import AssignedPageAttributeValue, AttributeValue
 from .....attribute.utils import associate_attribute_values_to_instance
 from .....page.error_codes import PageErrorCode
 from ....tests.utils import get_graphql_content
@@ -202,6 +202,9 @@ def test_sort_page_attribute_values_invalid_value_id(
             ),
         ]
     )
+
+    AssignedPageAttributeValue.objects.filter(new_page_id=page.id).delete()
+
     associate_attribute_values_to_instance(
         page, page_type_page_reference_attribute, *attr_values
     )

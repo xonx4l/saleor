@@ -445,9 +445,9 @@ class AttributeAssignmentMixin:
         if clean_assignment:
             # TODO fix that later
             if isinstance(instance, page_models.Page):
-                instance.attributevalues.filter(
-                    value__attribute_id__in=clean_assignment
-                ).first()
+                attribute_models.AssignedPageAttributeValue.objects.filter(
+                    new_page_id=instance.pk, value__attribute__in=clean_assignment
+                ).delete()
             else:
                 instance.attributes.filter(
                     assignment__attribute_id__in=clean_assignment

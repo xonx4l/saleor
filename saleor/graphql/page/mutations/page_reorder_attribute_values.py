@@ -62,7 +62,7 @@ class PageReorderAttributeValues(BaseReorderAttributeValuesMutation):
             instance, instance_type, attribute_id, error_code_enum
         )
 
-        values_m2m = instance.attributevalues.all()
+        values_m2m = getattr(instance, assignment_lookup)
         try:
             operations = cls.prepare_operations(moves, values_m2m)
         except ValidationError as error:
