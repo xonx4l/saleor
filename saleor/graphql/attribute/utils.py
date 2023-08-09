@@ -443,10 +443,9 @@ class AttributeAssignmentMixin:
 
         # drop attribute assignment model when values are unassigned from instance
         if clean_assignment:
-            # TODO fix that later
             if isinstance(instance, page_models.Page):
                 attribute_models.AssignedPageAttributeValue.objects.filter(
-                    new_page_id=instance.pk, value__attribute__in=clean_assignment
+                    page_id=instance.pk, value__attribute__in=clean_assignment
                 ).delete()
             else:
                 instance.attributes.filter(

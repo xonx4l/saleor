@@ -69,14 +69,14 @@ def _associate_attribute_to_instance(
     """
     if isinstance(instance, Page):
         for i in AssignedPageAttributeValue.objects.filter(
-            new_page_id=instance.pk, value__attribute=attribute
+            page_id=instance.pk, value__attribute=attribute
         ).exclude(value__in=values):
             i.delete()
 
         # Create new assignments
         for value in values:
             obj, _ = AssignedPageAttributeValue.objects.get_or_create(
-                new_page=instance, value=value
+                page=instance, value=value
             )
 
         sort_assigned_attribute_values(instance, attribute, values)
@@ -163,5 +163,5 @@ def get_page_attributes(page: Page):
 
 def get_page_attribute_values(page: Page, attribute: Attribute):
     return AttributeValue.objects.filter(
-        pagevalueassignment__new_page_id=page.pk, attribute_id=attribute.pk
+        pagevalueassignment__page_id=page.pk, attribute_id=attribute.pk
     ).order_by("pagevalueassignment__sort_order")

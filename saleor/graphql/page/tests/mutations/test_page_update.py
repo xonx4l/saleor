@@ -1094,7 +1094,7 @@ def test_update_page_change_attribute_values_ordering(
     attribute = get_page_attributes(page).first()
     assert list(
         AssignedPageAttributeValue.objects.filter(
-            value__attribute_id=attribute.id, new_page_id=page.id
+            value__attribute_id=attribute.id, page_id=page.id
         ).values_list("value_id", flat=True)
     ) == [attr_value_3.pk, attr_value_2.pk, attr_value_1.pk]
 
@@ -1140,7 +1140,7 @@ def test_update_page_change_attribute_values_ordering(
     attribute = get_page_attributes(page).first()
     assert list(
         AssignedPageAttributeValue.objects.filter(
-            value__attribute_id=attribute.id, new_page_id=page.id
+            value__attribute_id=attribute.id, page_id=page.id
         ).values_list("value_id", flat=True)
     ) == [attr_value_2.pk, attr_value_1.pk, attr_value_3.pk]
 

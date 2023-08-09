@@ -203,7 +203,7 @@ def test_sort_page_attribute_values_invalid_value_id(
         ]
     )
 
-    AssignedPageAttributeValue.objects.filter(new_page_id=page.id).delete()
+    AssignedPageAttributeValue.objects.filter(page_id=page.id).delete()
 
     associate_attribute_values_to_instance(
         page, page_type_page_reference_attribute, *attr_values

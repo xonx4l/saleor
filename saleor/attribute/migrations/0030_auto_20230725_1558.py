@@ -10,7 +10,7 @@ def assign_pages_to_attribute_values(apps, schema_editor):
     )
 
     for attribute_value in AssignedPageAttributeValue.objects.all():
-        attribute_value.new_page = attribute_value.assignment.page
+        attribute_value.page = attribute_value.assignment.page
         attribute_value.save()
 
 
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="assignedpageattributevalue",
-            name="new_page",
+            name="page",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
@@ -32,13 +32,22 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunPython(assign_pages_to_attribute_values),
+        migrations.AlterField(
+            model_name="assignedpageattributevalue",
+            name="page",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="attributevalues",
+                to="page.page",
+            ),
+        ),
         migrations.RemoveField(
             model_name="attributepage",
             name="assigned_pages",
         ),
         migrations.AlterUniqueTogether(
             name="assignedpageattributevalue",
-            unique_together={("value", "new_page")},
+            unique_together={("value", "page")},
         ),
         migrations.RemoveField(
             model_name="assignedpageattributevalue",
