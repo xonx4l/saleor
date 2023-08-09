@@ -79,9 +79,7 @@ class PageReorderAttributeValues(BaseReorderAttributeValuesMutation):
         pk = cls.get_global_id_or_error(instance_id, only_type=Page, field="page_id")
 
         try:
-            page = page_models.Page.objects.prefetch_related("new_attributes").get(
-                pk=pk
-            )
+            page = page_models.Page.objects.get(pk=pk)
         except ObjectDoesNotExist:
             raise ValidationError(
                 {

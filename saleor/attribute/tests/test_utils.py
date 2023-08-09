@@ -1,7 +1,7 @@
 import pytest
 
 from ...product.models import ProductType
-from ..utils import associate_attribute_values_to_instance
+from ..utils import associate_attribute_values_to_instance, get_page_attributes
 
 
 def test_associate_attribute_to_non_product_instance(color_attribute):
@@ -77,11 +77,10 @@ def test_associate_attribute_to_product_instance_multiple_values(
 
 def test_associate_attribute_to_page_instance_multiple_values(page):
     """Ensure multiple values in proper order are assigned."""
-    attribute = page.new_attributes.first()
+    attribute = get_page_attributes(page).first()
     assert attribute is not None, "The page doesn't have attribute-values"
     assert page.attributevalues.count() == 1
 
-    # attribute = new_attributes
     values = attribute.values.all()
 
     # Clear the values

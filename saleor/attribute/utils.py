@@ -68,8 +68,6 @@ def _associate_attribute_to_instance(
     https://github.com/saleor/saleor/issues/12881
     """
     if isinstance(instance, Page):
-        instance.new_attributes.add(attribute)
-
         for i in AssignedPageAttributeValue.objects.filter(
             new_page_id=instance.pk, value__attribute=attribute
         ).exclude(value__in=values):

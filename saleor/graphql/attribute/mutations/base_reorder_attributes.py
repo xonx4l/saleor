@@ -110,8 +110,7 @@ class BaseReorderAttributeValuesMutation(BaseMutation):
         )
 
         try:
-            # # TODO just temporary
-            if hasattr(instance, "new_attributes"):
+            if instance_type == "page":
                 attribute_assignment = get_page_attributes(instance).get(
                     id=attribute_pk
                 )

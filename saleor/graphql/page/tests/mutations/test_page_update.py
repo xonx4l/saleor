@@ -355,7 +355,7 @@ def test_update_page_clear_values(staff_api_client, permission_manage_pages, pag
     # given
     query = UPDATE_PAGE_MUTATION
 
-    page_attr = page.new_attributes.first()
+    page_attr = get_page_attributes(page).first()
     # attribute = page_attr.assignment.attribute
     attribute = page_attr
     attribute.value_required = False

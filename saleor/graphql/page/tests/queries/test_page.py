@@ -1,7 +1,10 @@
 import graphene
 
 from .....attribute.models import AttributeValue
-from .....attribute.utils import associate_attribute_values_to_instance
+from .....attribute.utils import (
+    associate_attribute_values_to_instance,
+    get_page_attributes,
+)
 from .....tests.utils import dummy_editorjs
 from ....tests.utils import get_graphql_content, get_graphql_content_from_response
 
@@ -36,8 +39,9 @@ def test_query_published_page(user_api_client, page):
 
     page_type = page.page_type
 
-    assert page.new_attributes.count() == 1
-    page_attr_assigned = page.new_attributes.first()
+    page_attributes = get_page_attributes(page)
+
+    page_attr_assigned = page_attributes.first()
     page_attr = page_attr_assigned
 
     assert page.attributevalues.count() == 1

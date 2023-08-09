@@ -5659,15 +5659,6 @@ def page(db, page_type):
     page_attr = page_type.page_attributes.first()
     page_attr_value = page_attr.values.first()
 
-    print(page_attr.values.all())
-    print(
-        "-----##-------in page fixture",
-        page,
-        page_type,
-        page_attr,
-        "--",
-        page_attr_value,
-    )
     associate_attribute_values_to_instance(page, page_attr, page_attr_value)
 
     return page
