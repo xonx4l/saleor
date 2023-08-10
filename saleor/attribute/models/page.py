@@ -13,7 +13,6 @@ class AssignedPageAttributeValue(SortableModel):
     )
     page = models.ForeignKey(
         Page,
-        null=True,
         related_name="attributevalues",
         on_delete=models.CASCADE,
     )
@@ -23,7 +22,7 @@ class AssignedPageAttributeValue(SortableModel):
         ordering = ("sort_order", "pk")
 
     def get_ordering_queryset(self):
-        return self.page.attributevalues.all()  # type: ignore
+        return self.page.attributevalues.all()
 
 
 class AttributePage(SortableModel):
