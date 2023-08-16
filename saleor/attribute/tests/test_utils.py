@@ -1,8 +1,20 @@
 import pytest
 
 from ...product.models import ProductType
-from ..utils import associate_attribute_values_to_instance
+from ..utils import (
+    associate_attribute_values_to_instance,
+    validate_product_type_owns_attribute,
+)
 from .model_helpers import get_product_attribute_values, get_product_attributes
+
+
+def test_validate_product_type_owns_attribute(product, color_attribute, size_attribute):
+    with pytest.raises(AssertionError) as exc:
+        validate_product_type_owns_attribute(product, color_attribute, size_attribute)
+
+    assert exc.value.args == (
+        "Some attributes are not assigned to the associated ProductType.",
+    )
 
 
 def test_associate_attribute_to_non_product_instance(color_attribute):
