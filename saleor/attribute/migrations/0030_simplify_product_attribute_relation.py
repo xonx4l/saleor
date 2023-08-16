@@ -2,16 +2,18 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
+from django.db.models.signals import post_migrate
+from django.apps import apps as registry
+
+from .tasks.saleor3_16 import assign_products_to_attribute_values_task
 
 
-def assign_products_to_attribute_values(apps, schema_editor):
-    AssignedProductAttributeValue = apps.get_model(
-        "attribute", "AssignedProductAttributeValue"
-    )
+def enqueue_data_migration(apps, _schema_editor):
+    def on_migrations_complete(sender=None, **kwargs):
+        assign_products_to_attribute_values_task.delay()
 
-    for attribute_value in AssignedProductAttributeValue.objects.all():
-        attribute_value.new_product = attribute_value.assignment.product
-        attribute_value.save()
+    sender = registry.get_app_config("attribute")
+    post_migrate.connect(on_migrations_complete, weak=False, sender=sender)
 
 
 class Migration(migrations.Migration):
@@ -38,18 +40,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="assignedproductattributevalue",
-            name="new_product",
-            field=models.ForeignKey(
-                null=True,
-                blank=False,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="attributevalues",
-                to="product.Product",
-            ),
-        ),
-        migrations.RunPython(assign_products_to_attribute_values),
         # Set FKs to allow null values before marking their models/fields deleted
         migrations.AlterField(
             model_name="assignedproductattributevalue",
@@ -60,6 +50,10 @@ class Migration(migrations.Migration):
                 to="attribute.AssignedProductAttribute",
                 null=True,
             ),
+        ),
+        migrations.AlterUniqueTogether(
+            name="assignedproductattribute",
+            unique_together={},
         ),
         migrations.AlterField(
             model_name="assignedproductattribute",
@@ -99,14 +93,18 @@ class Migration(migrations.Migration):
             attribute_assignedpa_assignment_id_6863be0a_fk_attribute
             """
         ),
-        migrations.AlterUniqueTogether(
-            name="assignedproductattribute",
-            unique_together={},
-        ),
         migrations.SeparateDatabaseAndState(state_operations=state_operations),
-        migrations.RenameField(
+        # Add a new field
+        migrations.AddField(
             model_name="assignedproductattributevalue",
-            old_name="new_product",
-            new_name="product",
+            name="product",
+            field=models.ForeignKey(
+                null=True,
+                blank=False,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="attributevalues",
+                to="product.Product",
+            ),
         ),
+        migrations.RunPython(enqueue_data_migration, migrations.RunPython.noop),
     ]
