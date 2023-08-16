@@ -67,10 +67,6 @@ All notable, unreleased changes to this project will be documented in this file.
     1. Shipping address
     2. Billing address
     3. Channel's default country
-      1. Shipping address
-      2. Billing address
-      3. Channel's default country
-
 
 ### GraphQL API
 
