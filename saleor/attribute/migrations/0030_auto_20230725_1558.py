@@ -14,33 +14,56 @@ def assign_pages_to_attribute_values(apps, schema_editor):
         attribute_value.save()
 
 
+DB_TABLES = {
+    "attribute_assignedpageattribute": """
+            SELECT conname
+            FROM pg_constraint
+            INNER JOIN pg_class ON conrelid=pg_class.oid
+            WHERE pg_class.relname='attribute_assignedpageattribute'
+            AND contype='f';
+        """,
+    "attribute_assignedpageattributevalue": """
+            SELECT DISTINCT conname
+            FROM pg_constraint
+            INNER JOIN pg_class ON conrelid=pg_class.oid
+            INNER JOIN pg_attribute ON pg_attribute.attnum = ANY(pg_constraint.conkey)
+            WHERE pg_class.relname='attribute_assignedpageattributevalue'
+            AND contype='f'
+            AND pg_attribute.attname='assignment_id';
+        """,
+}
+
+
+def get_fk_constraint_names(apps, schema_editor, db_table):
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute(DB_TABLES.get(db_table))
+        constraint_names = [row[0] for row in cursor.fetchall()]
+    return constraint_names
+
+
+def remove_fk_constraints(apps, schema_editor, db_table):
+    constraint_names = get_fk_constraint_names(apps, schema_editor, db_table)
+    for constraint_name in constraint_names:
+        schema_editor.execute(
+            f"ALTER TABLE {db_table} DROP CONSTRAINT IF EXISTS {constraint_name};"
+        )
+
+
+def remove_fk_constraints_attribute_assignedpageattribute(apps, schema_editor):
+    remove_fk_constraints(apps, schema_editor, "attribute_assignedpageattribute")
+
+
+def remove_fk_constraints_attribute_assignedpageattributevalue(apps, schema_editor):
+    remove_fk_constraints(apps, schema_editor, "attribute_assignedpageattributevalue")
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("page", "0028_add_default_page_type"),
         ("attribute", "0029_alter_attribute_unit"),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name="assignedpageattributevalue",
-            name="page",
-            field=models.ForeignKey(
-                null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="attributevalues",
-                to="page.page",
-            ),
-        ),
-        migrations.RunPython(assign_pages_to_attribute_values),
-        migrations.AlterField(
-            model_name="assignedpageattributevalue",
-            name="page",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="attributevalues",
-                to="page.page",
-            ),
-        ),
+    state_operations = [
         migrations.RemoveField(
             model_name="attributepage",
             name="assigned_pages",
@@ -56,4 +79,58 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name="AssignedPageAttribute",
         ),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name="assignedpageattributevalue",
+            name="assignment",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="pagevalueassignment",
+                to="attribute.AssignedPageAttribute",
+                null=True,
+            ),
+        ),
+        migrations.AlterField(
+            model_name="assignedpageattribute",
+            name="page",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="attributes",
+                to="page.Page",
+                null=True,
+            ),
+        ),
+        migrations.AlterField(
+            model_name="assignedpageattribute",
+            name="assignment",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="pageassignments",
+                to="attribute.AttributePage",
+                null=True,
+            ),
+        ),
+        migrations.RunPython(
+            remove_fk_constraints_attribute_assignedpageattribute,
+            migrations.RunPython.noop,
+        ),
+        migrations.RunPython(
+            remove_fk_constraints_attribute_assignedpageattributevalue,
+            migrations.RunPython.noop,
+        ),
+        migrations.SeparateDatabaseAndState(state_operations=state_operations),
+        migrations.AddField(
+            model_name="assignedpageattributevalue",
+            name="page",
+            field=models.ForeignKey(
+                null=True,
+                blank=False,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="attributevalues",
+                to="page.page",
+            ),
+        ),
+        migrations.RunPython(assign_pages_to_attribute_values),
     ]

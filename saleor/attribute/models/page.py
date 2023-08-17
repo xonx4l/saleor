@@ -15,6 +15,8 @@ class AssignedPageAttributeValue(SortableModel):
         Page,
         related_name="attributevalues",
         on_delete=models.CASCADE,
+        null=True,
+        blank=False,
     )
 
     class Meta:
@@ -22,7 +24,7 @@ class AssignedPageAttributeValue(SortableModel):
         ordering = ("sort_order", "pk")
 
     def get_ordering_queryset(self):
-        return self.page.attributevalues.all()
+        return self.page.attributevalues.all()  # type: ignore[union-attr]
 
 
 class AttributePage(SortableModel):
