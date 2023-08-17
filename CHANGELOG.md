@@ -10,6 +10,9 @@ All notable, unreleased changes to this project will be documented in this file.
 
 ### Saleor Apps
 
+- Add `FULFILLMENT_TRACKING_NUMBER_UPDATED` webhook - #13708, by @Air-t
+  - Called after `fulfillmentUpdateTracking` or `orderFulfill` mutation if tracking number is updated.
+
 ### Other changes
 - Fix error in variant available stock calculation - 13593 by @awaisdar001
 

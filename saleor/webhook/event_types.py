@@ -88,6 +88,7 @@ class WebhookEventAsyncType:
     FULFILLMENT_CANCELED = "fulfillment_canceled"
     FULFILLMENT_APPROVED = "fulfillment_approved"
     FULFILLMENT_METADATA_UPDATED = "fulfillment_metadata_updated"
+    FULFILLMENT_TRACKING_NUMBER_UPDATED = "fulfillment_tracking_number_updated"
 
     DRAFT_ORDER_CREATED = "draft_order_created"
     DRAFT_ORDER_UPDATED = "draft_order_updated"
@@ -407,6 +408,10 @@ class WebhookEventAsyncType:
         },
         FULFILLMENT_METADATA_UPDATED: {
             "name": "Fulfillment metadata updated",
+            "permission": OrderPermissions.MANAGE_ORDERS,
+        },
+        FULFILLMENT_TRACKING_NUMBER_UPDATED: {
+            "name": "Fulfillment tracking number updated.",
             "permission": OrderPermissions.MANAGE_ORDERS,
         },
         DRAFT_ORDER_CREATED: {

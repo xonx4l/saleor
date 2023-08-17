@@ -1932,6 +1932,7 @@ enum WebhookEventTypeEnum @doc(category: "Webhooks") {
   Added in Saleor 3.8.
   """
   FULFILLMENT_METADATA_UPDATED
+  FULFILLMENT_TRACKING_NUMBER_UPDATED
 
   """A draft order is created."""
   DRAFT_ORDER_CREATED
@@ -2596,6 +2597,7 @@ enum WebhookEventTypeAsyncEnum @doc(category: "Webhooks") {
   Added in Saleor 3.8.
   """
   FULFILLMENT_METADATA_UPDATED
+  FULFILLMENT_TRACKING_NUMBER_UPDATED
 
   """A draft order is created."""
   DRAFT_ORDER_CREATED
@@ -3460,6 +3462,7 @@ enum WebhookSampleEventTypeEnum @doc(category: "Webhooks") {
   FULFILLMENT_CANCELED
   FULFILLMENT_APPROVED
   FULFILLMENT_METADATA_UPDATED
+  FULFILLMENT_TRACKING_NUMBER_UPDATED
   DRAFT_ORDER_CREATED
   DRAFT_ORDER_UPDATED
   DRAFT_ORDER_DELETED
@@ -15864,6 +15867,9 @@ type Mutation {
   Creates new fulfillments for an order. 
   
   Requires one of the following permissions: MANAGE_ORDERS.
+  
+  Triggers the following webhook events:
+  - FULFILLMENT_TRACKING_NUMBER_UPDATED (async): Sent when fulfillment tracking number is updated.
   """
   orderFulfill(
     """Fields required to create a fulfillment."""
@@ -15871,7 +15877,7 @@ type Mutation {
 
     """ID of the order to be fulfilled."""
     order: ID
-  ): OrderFulfill @doc(category: "Orders")
+  ): OrderFulfill @doc(category: "Orders") @webhookEventsInfo(asyncEvents: [FULFILLMENT_TRACKING_NUMBER_UPDATED], syncEvents: [])
 
   """
   Cancels existing fulfillment and optionally restocks items. 
@@ -15908,6 +15914,9 @@ type Mutation {
   Updates a fulfillment for an order. 
   
   Requires one of the following permissions: MANAGE_ORDERS.
+  
+  Triggers the following webhook events:
+  - FULFILLMENT_TRACKING_NUMBER_UPDATED (async): Fulfillment tracking number is updated.
   """
   orderFulfillmentUpdateTracking(
     """ID of a fulfillment to update."""
@@ -15915,7 +15924,7 @@ type Mutation {
 
     """Fields required to update a fulfillment."""
     input: FulfillmentUpdateTrackingInput!
-  ): FulfillmentUpdateTracking @doc(category: "Orders")
+  ): FulfillmentUpdateTracking @doc(category: "Orders") @webhookEventsInfo(asyncEvents: [FULFILLMENT_TRACKING_NUMBER_UPDATED], syncEvents: [])
 
   """
   Refund products. 
@@ -23684,8 +23693,11 @@ type OrderConfirm @doc(category: "Orders") {
 Creates new fulfillments for an order. 
 
 Requires one of the following permissions: MANAGE_ORDERS.
+
+Triggers the following webhook events:
+- FULFILLMENT_TRACKING_NUMBER_UPDATED (async): Sent when fulfillment tracking number is updated.
 """
-type OrderFulfill @doc(category: "Orders") {
+type OrderFulfill @doc(category: "Orders") @webhookEventsInfo(asyncEvents: [FULFILLMENT_TRACKING_NUMBER_UPDATED], syncEvents: []) {
   """List of created fulfillments."""
   fulfillments: [Fulfillment!]
 
@@ -23772,8 +23784,11 @@ type FulfillmentApprove @doc(category: "Orders") {
 Updates a fulfillment for an order. 
 
 Requires one of the following permissions: MANAGE_ORDERS.
+
+Triggers the following webhook events:
+- FULFILLMENT_TRACKING_NUMBER_UPDATED (async): Fulfillment tracking number is updated.
 """
-type FulfillmentUpdateTracking @doc(category: "Orders") {
+type FulfillmentUpdateTracking @doc(category: "Orders") @webhookEventsInfo(asyncEvents: [FULFILLMENT_TRACKING_NUMBER_UPDATED], syncEvents: []) {
   """A fulfillment with updated tracking."""
   fulfillment: Fulfillment
 
@@ -31320,6 +31335,31 @@ Event sent when new fulfillment is created.
 Added in Saleor 3.4.
 """
 type FulfillmentCreated implements Event @doc(category: "Orders") {
+  """Time of the event."""
+  issuedAt: DateTime
+
+  """Saleor version that triggered the event."""
+  version: String
+
+  """The user or application that triggered the event."""
+  issuingPrincipal: IssuingPrincipal
+
+  """The application receiving the webhook."""
+  recipient: App
+
+  """The fulfillment the event relates to."""
+  fulfillment: Fulfillment
+
+  """The order the fulfillment belongs to."""
+  order: Order
+}
+
+"""
+Event sent when the tracking number is updated.
+
+Added in Saleor 3.16.
+"""
+type FulfillmentTrackingNumberUpdated implements Event @doc(category: "Orders") {
   """Time of the event."""
   issuedAt: DateTime
 
