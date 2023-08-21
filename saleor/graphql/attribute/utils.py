@@ -794,8 +794,7 @@ class ProductAttributeAssignmentMixin(AttributeAssignmentMixin):
         value,
     ):
         return (
-            attribute_models.AttributeValue.objects.filter(
-                attribute_id=attribute.pk,
+            attribute.values.filter(
                 productvalueassignment__product_id=instance.pk,
                 **{lookup_field: value},
             ).first()
@@ -834,7 +833,7 @@ class ProductAttributeAssignmentMixin(AttributeAssignmentMixin):
         for attribute, _ in cleaned_input:
             if attribute not in attr_and_value_slugs_map:
                 attr_and_value_slugs_map[attribute] = set(
-                    attribute.values.all().values_list("slug", flat=True)
+                    attribute.values.values_list("slug", flat=True)
                 )
 
         for attribute, attr_values in cleaned_input:
