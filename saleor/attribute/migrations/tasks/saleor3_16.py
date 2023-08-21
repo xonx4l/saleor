@@ -1,7 +1,6 @@
 from ....celeryconf import app
 from ...models import AssignedProductAttributeValue
 
-from django.db import transaction
 from django.db import connection
 
 # batch size to make sure that task is completed in 1 second
@@ -16,25 +15,24 @@ def update_product_assignment():
     The old field has already been deleted in Django State operations so we need
     to use raw SQL to get the value and copy the assignment from the old table.
     """
-    with transaction.atomic():
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                UPDATE attribute_assignedproductattributevalue
-                SET product_id = (
-                    SELECT product_id
-                    FROM attribute_assignedproductattribute
-                    WHERE attribute_assignedproductattributevalue.assignment_id = attribute_assignedproductattribute.id
-                )
-                WHERE id IN (
-                    SELECT ID FROM attribute_assignedproductattributevalue
-                    ORDER BY ID DESC
-                    FOR UPDATE
-                    LIMIT %s
-                );
-                """,  # noqa
-                [BATCH_SIZE],
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            UPDATE attribute_assignedproductattributevalue
+            SET product_id = (
+                SELECT product_id
+                FROM attribute_assignedproductattribute
+                WHERE attribute_assignedproductattributevalue.assignment_id = attribute_assignedproductattribute.id
             )
+            WHERE id IN (
+                SELECT ID FROM attribute_assignedproductattributevalue
+                ORDER BY ID DESC
+                FOR UPDATE
+                LIMIT %s
+            );
+            """,  # noqa
+            [BATCH_SIZE],
+        )
 
 
 @app.task
