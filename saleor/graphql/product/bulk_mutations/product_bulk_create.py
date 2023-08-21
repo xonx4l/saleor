@@ -279,9 +279,11 @@ class ProductBulkCreate(BaseMutation):
 
         if attributes := cleaned_input.get("attributes"):
             try:
-                attributes_qs = cleaned_input[
-                    "product_type"
-                ].product_attributes.select_related("values")
+                attributes_qs = (
+                    cleaned_input["product_type"]
+                    .product_attributes.all()
+                    .prefetch_related("values")
+                )
                 attributes = ProductAttributeAssignmentMixin.clean_input(
                     attributes, attributes_qs
                 )

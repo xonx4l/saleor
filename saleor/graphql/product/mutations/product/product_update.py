@@ -44,7 +44,7 @@ class ProductUpdate(ProductCreate, ModelWithExtRefMutation):
     def clean_attributes(
         cls, attributes: dict, product_type: models.ProductType
     ) -> T_INPUT_MAP:
-        attributes_qs = product_type.product_attributes.select_related("values")
+        attributes_qs = product_type.product_attributes.prefetch_related("values")
         attributes = ProductAttributeAssignmentMixin.clean_input(
             attributes, attributes_qs, creation=False
         )
