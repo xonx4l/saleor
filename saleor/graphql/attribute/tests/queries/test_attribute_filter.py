@@ -134,7 +134,7 @@ def test_filter_attribute_values_by_global_id_list(
     # given
     values = attribute_choices_for_sorting.values.all()
     global_ids = [
-        graphene.Node.to_global_id("AttributeValue", value.pk) for value in values[:2]
+        graphene.Node.to_global_id("AttributeValue", value.id) for value in values[:2]
     ]
     variables = {"filters": {"ids": global_ids}}
 

@@ -3,6 +3,7 @@ import pytest
 from ...product.models import ProductType
 from ..utils import (
     associate_attribute_values_to_instance,
+    disassociate_attributes_from_instance,
     validate_product_type_owns_attribute,
 )
 from .model_helpers import get_product_attribute_values, get_product_attributes
@@ -57,6 +58,23 @@ def test_associate_attribute_to_product_instance_without_values(product):
     # Ensure the values were cleared and no new assignment entry was created
     assert get_product_attributes(product).count() == 1
     assert product.attributevalues.count() == 0
+
+
+def test_disassociate_attributes_from_instance(product):
+    """Ensure clearing the values from a product is properly working."""
+    attribute = get_product_attributes(product).first()
+    assert attribute is not None, "Product doesn't have attributes assigned"
+    value_count = get_product_attribute_values(product, attribute).count()
+    assert value_count == 1, "Product doesn't have attribute-values"
+
+    # Clear the values
+    disassociate_attributes_from_instance(product, attribute)
+
+    # Check that the attribute still belongs to the product but doesn't have values
+    attribute = get_product_attributes(product).first()
+    assert attribute is not None, "Product doesn't have attributes assigned"
+    value_count = get_product_attribute_values(product, attribute).count()
+    assert value_count == 0, "Product has attribute-values assigned after removal"
 
 
 def test_associate_attribute_to_product_instance_multiple_values(

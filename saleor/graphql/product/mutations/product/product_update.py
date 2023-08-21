@@ -44,7 +44,7 @@ class ProductUpdate(ProductCreate, ModelWithExtRefMutation):
     def clean_attributes(
         cls, attributes: dict, product_type: models.ProductType
     ) -> T_INPUT_MAP:
-        attributes_qs = product_type.product_attributes.all()
+        attributes_qs = product_type.product_attributes.select_related("values")
         attributes = ProductAttributeAssignmentMixin.clean_input(
             attributes, attributes_qs, creation=False
         )
@@ -66,7 +66,7 @@ class ProductUpdate(ProductCreate, ModelWithExtRefMutation):
         # prefetch them.
         object_id = cls.get_object_id(**data)
         if object_id and data.get("attributes"):
-            # Prefetches needed by AttributeAssignmentMixin and
+            # Prefetches needed by ProductAttributeAssignmentMixin and
             # associate_attribute_values_to_instance
             qs = cls.Meta.model.objects.prefetch_related(
                 "product_type__product_attributes__values",

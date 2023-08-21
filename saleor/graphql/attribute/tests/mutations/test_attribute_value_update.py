@@ -101,7 +101,7 @@ def test_update_attribute_value_update_search_index_dirty_in_product(
     first_attribute = get_product_attributes(product).first()
     value = get_product_attribute_values(product, first_attribute).first()
 
-    node_id = graphene.Node.to_global_id("AttributeValue", value.pk)
+    node_id = graphene.Node.to_global_id("AttributeValue", value.id)
     name = "Crimson name"
     variables = {"input": {"name": name}, "id": node_id}
 

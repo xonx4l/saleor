@@ -64,7 +64,7 @@ class AttrValuesInput:
 
 
 T_INSTANCE = Union[
-    product_models.ProductVariant, product_models.Product, page_models.Page
+    product_models.Product, product_models.ProductVariant, page_models.Page
 ]
 T_INPUT_MAP = List[Tuple[attribute_models.Attribute, AttrValuesInput]]
 T_ERROR_DICT = Dict[Tuple[str, str], List]

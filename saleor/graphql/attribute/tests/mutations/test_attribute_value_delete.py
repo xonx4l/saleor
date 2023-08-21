@@ -59,7 +59,7 @@ def test_delete_attribute_value_update_search_index_dirty_in_product(
     first_attribute = get_product_attributes(product).first()
     value = get_product_attribute_values(product, first_attribute).first()
     query = ATTRIBUTE_VALUE_DELETE_MUTATION
-    node_id = graphene.Node.to_global_id("AttributeValue", value.pk)
+    node_id = graphene.Node.to_global_id("AttributeValue", value.id)
     variables = {"id": node_id}
 
     # when
@@ -69,9 +69,6 @@ def test_delete_attribute_value_update_search_index_dirty_in_product(
     product.refresh_from_db(fields=["search_index_dirty"])
 
     # then
-    # Do we need this?
-    # with pytest.raises(value._meta.model.DoesNotExist):
-    #     value.refresh_from_db()
     assert product.search_index_dirty is True
 
 

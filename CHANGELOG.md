@@ -6,6 +6,7 @@ All notable, unreleased changes to this project will be documented in this file.
 
 ### Breaking changes
 - Change the Attribute - Product relation to decrease code complexity and make it easier to understand the relations - #13407 by @aniav
+- The CSV export will now use empty string for empty values instead of a whitespace value
 
 ### GraphQL API
 
