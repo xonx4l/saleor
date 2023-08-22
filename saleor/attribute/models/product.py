@@ -16,7 +16,7 @@ class AssignedProductAttributeValue(SortableModel):
         related_name="attributevalues",
         on_delete=models.CASCADE,
         null=True,  # make it non-nullable after migration 0030 went through release
-        blank=False,
+        blank=True,
     )
 
     class Meta:

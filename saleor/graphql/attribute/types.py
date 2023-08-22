@@ -40,6 +40,7 @@ from ..core.types import (
 from ..decorators import check_attribute_required_permissions
 from ..meta.types import ObjectWithMetadata
 from ..translations.fields import TranslationField
+from ..translations.resolvers import resolve_translation
 from ..translations.types import AttributeTranslation, AttributeValueTranslation
 from .dataloaders import AttributesByAttributeId
 from .descriptions import AttributeDescriptions, AttributeValueDescriptions
@@ -146,6 +147,10 @@ class AttributeValue(ModelObjectType[models.AttributeValue]):
             .load(root.attribute_id)
             .then(_resolve_date)
         )
+
+    @staticmethod
+    def resolve_translation(_, info, site, *, language_code):
+        return resolve_translation(site.settings, info, language_code=language_code)
 
 
 class AttributeValueCountableConnection(CountableConnection):

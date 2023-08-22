@@ -324,7 +324,7 @@ class AttributeValueTranslation(Translation):
                 elif assigned_product_attribute_value := (
                     attribute_value.productvalueassignment.first()
                 ):
-                    if product_id := (assigned_product_attribute_value.product_id):
+                    if product_id := assigned_product_attribute_value.product_id:
                         context["product_id"] = product_id
             elif attribute.type == AttributeType.PAGE_TYPE:
                 if assigned_page_attribute_value := (

@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
             name="product",
             field=models.ForeignKey(
                 null=True,
-                blank=False,
+                blank=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="attributevalues",
                 to="product.Product",
