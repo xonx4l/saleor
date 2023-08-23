@@ -15,6 +15,7 @@ from ...order.utils import get_all_shipping_methods_for_order
 from ...page.models import PageTranslation
 from ...payment.interface import (
     ListStoredPaymentMethodsRequestData,
+    PaymentGatewayInitializeTokenizationRequestData,
     StoredPaymentMethodRequestDeleteData,
     TransactionActionData,
     TransactionSessionData,
@@ -1670,7 +1671,7 @@ class PaymentGatewayInitializeSession(SubscriptionObjectType):
     )
     data = graphene.Field(
         JSON,
-        description="Payment gateway data in JSON format, recieved from storefront.",
+        description="Payment gateway data in JSON format, received from storefront.",
     )
     amount = graphene.Field(
         PositiveDecimal,
@@ -1727,7 +1728,7 @@ class TransactionSessionBase(SubscriptionObjectType, AbstractType):
     )
     data = graphene.Field(
         JSON,
-        description="Payment gateway data in JSON format, recieved from storefront.",
+        description="Payment gateway data in JSON format, received from storefront.",
     )
     merchant_reference = graphene.String(
         description="Merchant reference assigned to this payment.", required=True
@@ -1919,6 +1920,60 @@ class StoredPaymentMethodDeleteRequested(SubscriptionObjectType):
     ):
         _, payment_method_data = root
         return payment_method_data.channel
+
+
+class PaymentGatewayInitializeTokenizationSession(SubscriptionObjectType):
+    user = graphene.Field(
+        UserType,
+        description=("The user related to the requested payment gateway tokenization."),
+        required=True,
+    )
+    channel = graphene.Field(
+        "saleor.graphql.channel.types.Channel",
+        description="Channel related to the requested delete action.",
+        required=True,
+    )
+    data = graphene.Field(
+        JSON,
+        description="Payment gateway data in JSON format, received from storefront.",
+    )
+
+    class Meta:
+        root_type = None
+        enable_dry_run = False
+        interfaces = (Event,)
+        description = (
+            "Event sent to initialize a new session in payment gateway to store the "
+            "payment method. " + ADDED_IN_316 + PREVIEW_FEATURE
+        )
+        doc_category = DOC_CATEGORY_PAYMENTS
+
+    @classmethod
+    def resolve_channel(
+        cls,
+        root: tuple[str, PaymentGatewayInitializeTokenizationRequestData],
+        _info: ResolveInfo,
+    ):
+        _, payment_method_data = root
+        return payment_method_data.channel
+
+    @classmethod
+    def resolve_user(
+        cls,
+        root: tuple[str, PaymentGatewayInitializeTokenizationRequestData],
+        _info: ResolveInfo,
+    ):
+        _, payment_method_data = root
+        return payment_method_data.user
+
+    @classmethod
+    def resolve_data(
+        cls,
+        root: tuple[str, PaymentGatewayInitializeTokenizationRequestData],
+        _info: ResolveInfo,
+    ):
+        _, payment_method_data = root
+        return payment_method_data.data
 
 
 class TranslationTypes(Union):
@@ -2442,5 +2497,8 @@ WEBHOOK_TYPES_MAP = {
     WebhookEventSyncType.LIST_STORED_PAYMENT_METHODS: ListStoredPaymentMethods,
     WebhookEventSyncType.STORED_PAYMENT_METHOD_DELETE_REQUESTED: (
         StoredPaymentMethodDeleteRequested
+    ),
+    WebhookEventSyncType.PAYMENT_GATEWAY_INITIALIZE_TOKENIZATION_SESSION: (
+        PaymentGatewayInitializeTokenizationSession
     ),
 }
