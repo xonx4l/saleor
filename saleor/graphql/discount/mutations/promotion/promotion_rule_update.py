@@ -10,6 +10,7 @@ from ....core.descriptions import ADDED_IN_315, PREVIEW_FEATURE
 from ....core.doc_category import DOC_CATEGORY_DISCOUNTS
 from ....core.mutations import ModelMutation
 from ....core.types import Error, NonNullList
+from ....plugins.dataloaders import get_plugin_manager_promise
 from ....utils.validators import check_for_duplicates
 from ...enums import PromotionRuleUpdateErrorCode
 from ...inputs import PromotionRuleBaseInput
@@ -71,14 +72,7 @@ class PromotionRuleUpdate(ModelMutation):
         cls.clean_instance(info, instance)
         cls.save(info, instance, cleaned_input)
         cls._save_m2m(info, instance, cleaned_input)
-        clear_promotion_old_sale_id(instance.promotion, save=True)
-
-        products = get_products_for_rule(instance)
-        product_ids = set(products.values_list("id", flat=True)) | previous_product_ids
-        if product_ids:
-            update_products_discounted_prices_for_promotion_task.delay(
-                list(product_ids)
-            )
+        cls.post_save_actions(info, instance, previous_product_ids)
 
         return cls.success_response(instance)
 
@@ -187,3 +181,15 @@ class PromotionRuleUpdate(ModelMutation):
                 instance.channels.remove(*remove_channels)
             if add_channels := cleaned_data.get("add_channels"):
                 instance.channels.add(*add_channels)
+
+    @classmethod
+    def post_save_actions(cls, info: ResolveInfo, instance, previous_product_ids):
+        clear_promotion_old_sale_id(instance.promotion, save=True)
+        products = get_products_for_rule(instance)
+        product_ids = set(products.values_list("id", flat=True)) | previous_product_ids
+        if product_ids:
+            update_products_discounted_prices_for_promotion_task.delay(
+                list(product_ids)
+            )
+        manager = get_plugin_manager_promise(info.context).get()
+        cls.call_event(manager.promotion_rule_updated, instance)

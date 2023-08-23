@@ -8,6 +8,7 @@ from ....core import ResolveInfo
 from ....core.descriptions import ADDED_IN_315, PREVIEW_FEATURE
 from ....core.doc_category import DOC_CATEGORY_DISCOUNTS
 from ....core.types import Error
+from ....plugins.dataloaders import get_plugin_manager_promise
 from ...enums import PromotionRuleDeleteErrorCode
 from ...types import PromotionRule
 from ...utils import get_products_for_rule
@@ -55,5 +56,8 @@ class PromotionRuleDelete(ModelDeleteMutation):
 
         if product_ids:
             update_products_discounted_prices_for_promotion_task.delay(product_ids)
+
+        manager = get_plugin_manager_promise(info.context).get()
+        cls.call_event(manager.promotion_rule_deleted, instance)
 
         return cls.success_response(instance)

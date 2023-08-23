@@ -12,6 +12,7 @@ from ....core.descriptions import ADDED_IN_315, PREVIEW_FEATURE
 from ....core.doc_category import DOC_CATEGORY_DISCOUNTS
 from ....core.mutations import ModelMutation
 from ....core.types import Error
+from ....plugins.dataloaders import get_plugin_manager_promise
 from ...enums import PromotionRuleCreateErrorCode
 from ...types import PromotionRule
 from ...utils import get_products_for_rule
@@ -150,3 +151,5 @@ class PromotionRuleCreate(ModelMutation):
                 list(products.values_list("id", flat=True))
             )
         clear_promotion_old_sale_id(instance.promotion, save=True)
+        manager = get_plugin_manager_promise(info.context).get()
+        cls.call_event(manager.promotion_rule_created, instance)

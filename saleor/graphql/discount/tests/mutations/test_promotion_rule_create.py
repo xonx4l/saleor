@@ -33,11 +33,13 @@ PROMOTION_RULE_CREATE_MUTATION = """
 """
 
 
+@patch("saleor.plugins.manager.PluginsManager.promotion_rule_created")
 @patch(
     "saleor.product.tasks.update_products_discounted_prices_for_promotion_task.delay"
 )
 def test_promotion_rule_create_by_staff_user(
     update_products_discounted_prices_for_promotion_task_mock,
+    promotion_rule_created_mock,
     staff_api_client,
     permission_group_manage_discounts,
     description_json,
@@ -118,6 +120,8 @@ def test_promotion_rule_create_by_staff_user(
     update_products_discounted_prices_for_promotion_task_mock.assert_called_once_with(
         [product.id]
     )
+    rule = promotion.rules.last()
+    promotion_rule_created_mock.assert_called_once_with(rule)
 
 
 @patch(
