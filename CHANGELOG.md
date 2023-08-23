@@ -21,6 +21,7 @@ in 3.17. Use `PaymentSettings.defaultTransactionFlowStrategy` instead.
 
 ### Other changes
 - Fix error in variant available stock calculation - 13593 by @awaisdar001
+Added a new `product` field on `AssignedProductAttributeValue`. First part of a simplification of Attribute - Product relation from #12881. by @aniav
 
 # 3.15.0 [Unreleased]
 
