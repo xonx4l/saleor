@@ -2016,6 +2016,15 @@ enum WebhookEventTypeEnum @doc(category: "Webhooks") {
   """A promotion is deactivated."""
   PROMOTION_ENDED
 
+  """A promotion rule is created."""
+  PROMOTION_RULE_CREATED
+
+  """A promotion rule is updated."""
+  PROMOTION_RULE_UPDATED
+
+  """A promotion rule is deleted."""
+  PROMOTION_RULE_DELETED
+
   """An invoice for order requested."""
   INVOICE_REQUESTED
 
@@ -2694,6 +2703,15 @@ enum WebhookEventTypeAsyncEnum @doc(category: "Webhooks") {
 
   """A promotion is deactivated."""
   PROMOTION_ENDED
+
+  """A promotion rule is created."""
+  PROMOTION_RULE_CREATED
+
+  """A promotion rule is updated."""
+  PROMOTION_RULE_UPDATED
+
+  """A promotion rule is deleted."""
+  PROMOTION_RULE_DELETED
 
   """An invoice for order requested."""
   INVOICE_REQUESTED
@@ -3549,6 +3567,9 @@ enum WebhookSampleEventTypeEnum @doc(category: "Webhooks") {
   PROMOTION_DELETED
   PROMOTION_STARTED
   PROMOTION_ENDED
+  PROMOTION_RULE_CREATED
+  PROMOTION_RULE_UPDATED
+  PROMOTION_RULE_DELETED
   INVOICE_REQUESTED
   INVOICE_DELETED
   INVOICE_SENT
@@ -32377,6 +32398,78 @@ type PromotionEnded implements Event @doc(category: "Discounts") {
 
   """The promotion the event relates to."""
   promotion: Promotion
+}
+
+"""
+Event sent when new promotion rule is created.
+
+Added in Saleor 3.15.
+
+Note: this API is currently in Feature Preview and can be subject to changes at later point.
+"""
+type PromotionRuleCreated implements Event @doc(category: "Discounts") {
+  """Time of the event."""
+  issuedAt: DateTime
+
+  """Saleor version that triggered the event."""
+  version: String
+
+  """The user or application that triggered the event."""
+  issuingPrincipal: IssuingPrincipal
+
+  """The application receiving the webhook."""
+  recipient: App
+
+  """The promotion rule the event relates to."""
+  promotionRule: PromotionRule
+}
+
+"""
+Event sent when new promotion rule is updated.
+
+Added in Saleor 3.15.
+
+Note: this API is currently in Feature Preview and can be subject to changes at later point.
+"""
+type PromotionRuleUpdated implements Event @doc(category: "Discounts") {
+  """Time of the event."""
+  issuedAt: DateTime
+
+  """Saleor version that triggered the event."""
+  version: String
+
+  """The user or application that triggered the event."""
+  issuingPrincipal: IssuingPrincipal
+
+  """The application receiving the webhook."""
+  recipient: App
+
+  """The promotion rule the event relates to."""
+  promotionRule: PromotionRule
+}
+
+"""
+Event sent when new promotion rule is deleted.
+
+Added in Saleor 3.15.
+
+Note: this API is currently in Feature Preview and can be subject to changes at later point.
+"""
+type PromotionRuleDeleted implements Event @doc(category: "Discounts") {
+  """Time of the event."""
+  issuedAt: DateTime
+
+  """Saleor version that triggered the event."""
+  version: String
+
+  """The user or application that triggered the event."""
+  issuingPrincipal: IssuingPrincipal
+
+  """The application receiving the webhook."""
+  recipient: App
+
+  """The promotion rule the event relates to."""
+  promotionRule: PromotionRule
 }
 
 """
