@@ -17212,11 +17212,14 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_RULE_CREATED (async): A promotion rule was created.
   """
   promotionRuleCreate(
     """Fields required to create a promotion rule."""
     input: PromotionRuleCreateInput!
-  ): PromotionRuleCreate @doc(category: "Discounts")
+  ): PromotionRuleCreate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_CREATED], syncEvents: [])
 
   """
   Updates an existing promotion rule.
@@ -17226,6 +17229,9 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_RULE_UPDATED (async): A promotion rule was updated.
   """
   promotionRuleUpdate(
     """ID of the promotion rule to update."""
@@ -17233,7 +17239,7 @@ type Mutation {
 
     """Fields required to create a promotion rule."""
     input: PromotionRuleUpdateInput!
-  ): PromotionRuleUpdate @doc(category: "Discounts")
+  ): PromotionRuleUpdate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_UPDATED], syncEvents: [])
 
   """
   Deletes a promotion rule.
@@ -17243,11 +17249,14 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_RULE_DELETED (async): A promotion rule was deleted.
   """
   promotionRuleDelete(
     """The ID of the promotion to remove."""
     id: ID!
-  ): PromotionRuleDelete @doc(category: "Discounts")
+  ): PromotionRuleDelete @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_DELETED], syncEvents: [])
 
   """
   Creates/updates translations for a promotion.
@@ -26513,8 +26522,11 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_RULE_CREATED (async): A promotion rule was created.
 """
-type PromotionRuleCreate @doc(category: "Discounts") {
+type PromotionRuleCreate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_CREATED], syncEvents: []) {
   errors: [PromotionRuleCreateError!]!
   promotionRule: PromotionRule
 }
@@ -26579,8 +26591,11 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_RULE_UPDATED (async): A promotion rule was updated.
 """
-type PromotionRuleUpdate @doc(category: "Discounts") {
+type PromotionRuleUpdate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_UPDATED], syncEvents: []) {
   errors: [PromotionRuleUpdateError!]!
   promotionRule: PromotionRule
 }
@@ -26649,8 +26664,11 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_RULE_DELETED (async): A promotion rule was deleted.
 """
-type PromotionRuleDelete @doc(category: "Discounts") {
+type PromotionRuleDelete @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_RULE_DELETED], syncEvents: []) {
   errors: [PromotionRuleDeleteError!]!
   promotionRule: PromotionRule
 }

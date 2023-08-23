@@ -5,11 +5,13 @@ from django.db import transaction
 from .....discount import RewardValueType, models
 from .....permission.enums import DiscountPermissions
 from .....product.tasks import update_products_discounted_prices_for_promotion_task
+from .....webhook.event_types import WebhookEventAsyncType
 from ....core import ResolveInfo
 from ....core.descriptions import ADDED_IN_315, PREVIEW_FEATURE
 from ....core.doc_category import DOC_CATEGORY_DISCOUNTS
 from ....core.mutations import ModelMutation
 from ....core.types import Error, NonNullList
+from ....core.utils import WebhookEventInfo
 from ....plugins.dataloaders import get_plugin_manager_promise
 from ....utils.validators import check_for_duplicates
 from ...enums import PromotionRuleUpdateErrorCode
@@ -59,6 +61,12 @@ class PromotionRuleUpdate(ModelMutation):
         permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
         error_type_class = PromotionRuleUpdateError
         doc_category = DOC_CATEGORY_DISCOUNTS
+        webhook_events_info = [
+            WebhookEventInfo(
+                type=WebhookEventAsyncType.PROMOTION_RULE_UPDATED,
+                description="A promotion rule was updated.",
+            ),
+        ]
 
     @classmethod
     def perform_mutation(cls, _root, info: ResolveInfo, /, **data):
