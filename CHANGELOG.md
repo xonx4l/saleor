@@ -165,7 +165,6 @@ Shipping methods can be removed by the user after it has been assigned to a chec
 - Add missing descriptions to payment module - #13546 by @devilsautumn
 - Fix `NOTIFY_USER` allow to create webhook with only one event - #13584 by @Air-t
 
-
 # 3.14.0
 
 ### Breaking changes
