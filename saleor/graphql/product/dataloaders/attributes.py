@@ -171,7 +171,7 @@ class AttributeValuesByProductIdLoader(DataLoader):
     context_key = "attributevalues_by_productid"
 
     def batch_load(self, keys):
-        attribute_values = (
+        attribute_values = list(
             AssignedProductAttributeValue.objects.using(self.database_connection_name)
             .filter(product_id__in=keys)
             .prefetch_related("value")
