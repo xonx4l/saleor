@@ -17134,11 +17134,15 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_CREATED (async): A promotion was created.
+  - PROMOTION_STARTED (async): Optionally called if promotion was started.
   """
   promotionCreate(
     """Fields requires to create a promotion."""
     input: PromotionCreateInput!
-  ): PromotionCreate @doc(category: "Discounts")
+  ): PromotionCreate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_CREATED, PROMOTION_STARTED], syncEvents: [])
 
   """
   Updates an existing promotion.
@@ -17148,6 +17152,11 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_UPDATED (async): A promotion was updated.
+  - PROMOTION_STARTED (async): Optionally called if promotion was started.
+  - PROMOTION_ENDED (async): Optionally called if promotion was ended.
   """
   promotionUpdate(
     """ID of the promotion to update."""
@@ -17155,7 +17164,7 @@ type Mutation {
 
     """Fields required to update a promotion."""
     input: PromotionUpdateInput!
-  ): PromotionUpdate @doc(category: "Discounts")
+  ): PromotionUpdate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_UPDATED, PROMOTION_STARTED, PROMOTION_ENDED], syncEvents: [])
 
   """
   Deletes a promotion.
@@ -17165,11 +17174,14 @@ type Mutation {
   Note: this API is currently in Feature Preview and can be subject to changes at later point. 
   
   Requires one of the following permissions: MANAGE_DISCOUNTS.
+  
+  Triggers the following webhook events:
+  - PROMOTION_DELETED (async): A promotion was deleted.
   """
   promotionDelete(
     """The ID of the promotion to remove."""
     id: ID!
-  ): PromotionDelete @doc(category: "Discounts")
+  ): PromotionDelete @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_DELETED], syncEvents: [])
 
   """
   Creates a new promotion rule.
@@ -26285,8 +26297,12 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_CREATED (async): A promotion was created.
+- PROMOTION_STARTED (async): Optionally called if promotion was started.
 """
-type PromotionCreate @doc(category: "Discounts") {
+type PromotionCreate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_CREATED, PROMOTION_STARTED], syncEvents: []) {
   errors: [PromotionCreateError!]!
   promotion: Promotion
 }
@@ -26386,8 +26402,13 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_UPDATED (async): A promotion was updated.
+- PROMOTION_STARTED (async): Optionally called if promotion was started.
+- PROMOTION_ENDED (async): Optionally called if promotion was ended.
 """
-type PromotionUpdate @doc(category: "Discounts") {
+type PromotionUpdate @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_UPDATED, PROMOTION_STARTED, PROMOTION_ENDED], syncEvents: []) {
   errors: [PromotionUpdateError!]!
   promotion: Promotion
 }
@@ -26435,8 +26456,11 @@ Added in Saleor 3.15.
 Note: this API is currently in Feature Preview and can be subject to changes at later point. 
 
 Requires one of the following permissions: MANAGE_DISCOUNTS.
+
+Triggers the following webhook events:
+- PROMOTION_DELETED (async): A promotion was deleted.
 """
-type PromotionDelete @doc(category: "Discounts") {
+type PromotionDelete @doc(category: "Discounts") @webhookEventsInfo(asyncEvents: [PROMOTION_DELETED], syncEvents: []) {
   errors: [PromotionDeleteError!]!
   promotion: Promotion
 }
