@@ -3,7 +3,7 @@ from typing import Optional
 
 from django.db.models import Q
 from i18naddress import get_validation_rules
-
+from promise.dataloader import DataLoader
 from ...account import models
 from ...core.exceptions import PermissionDenied
 from ...payment import gateway
@@ -34,21 +34,25 @@ USER_SEARCH_FIELDS = (
     "default_shipping_address__country",
 )
 
+def resolve_address(user, _info):
+    return address_loader.load(user.id)
 
-def resolve_customers(_info):
+def resolve_customers(_parent, _info):
     return models.User.objects.customers()
 
-
-def resolve_permission_group(id):
+def resolve_permission_group(_parent, _info, id):
     return models.Group.objects.filter(id=id).first()
 
-
-def resolve_permission_groups(_info):
+def resolve_permission_groups(_parent, _info):
     return models.Group.objects.all()
 
-
-def resolve_staff_users(_info):
+def resolve_staff_users(_parent, _info):
     return models.User.objects.staff()
+
+def resolve_checkout(user, _info):
+    return checkout_loader.load(user.id)
+
+
 
 
 @traced_resolver
